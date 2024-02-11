@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const contact = require('../models/contactModel');
-//get all contacts logic is written here
+
 const AllContacts = asyncHandler(async (req, res) => {
     const contacts = await contact.find();
     res.status(200).json(contacts);
@@ -37,7 +37,9 @@ const UpdateContacts = asyncHandler(async (req, res) => {
 const DeleteContact = asyncHandler(async (req, res) => {
     try {
         const contactId = req.params.id;
+        console.log(contactId);
         const deletedContact = await contact.findByIdAndDelete(contactId);
+        console.log(deletedContact);
         if (!deletedContact) {
             return res.status(404).json({ error: 'Contact not found' });
         }
@@ -49,9 +51,9 @@ const DeleteContact = asyncHandler(async (req, res) => {
 });
 
 const CreateContact = asyncHandler(async (req, res) => {
-    const { name, email, phone } = req.body;
+    const {Id, name, email, phone} = req.body;
 
-    if (!email || !name || !phone) {
+    if (!email || !name || !phone ||!Id) {
         return res.status(400).json({ error: 'Email, name, and phone are mandatory fields' });
     }
 
@@ -65,7 +67,7 @@ const CreateContact = asyncHandler(async (req, res) => {
             return res.status(400).json({ error: 'Contact with the same email already exists' });
         }
 
-        const newContact = await contact.create({ name, email, phone });
+        const newContact = await contact.create({ Id, name, email, phone });
         return res.status(201).json(newContact);
     } catch (error) {
         console.error('Error creating contact:', error);

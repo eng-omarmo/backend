@@ -1,6 +1,11 @@
 const  mongoose= require('mongoose');
 
 const contactSchema=mongoose.Schema({
+
+    Id:{
+        type : Number,
+        required:[true,'please enter the contact Name']
+    },
     name:{
         type : String,
         required:[true,'please enter the contact Name']
