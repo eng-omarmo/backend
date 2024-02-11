@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const contact = require('../models/contactModel');
-
+//get all contacts logic is written here
 const AllContacts = asyncHandler(async (req, res) => {
     const contacts = await contact.find();
     res.status(200).json(contacts);
