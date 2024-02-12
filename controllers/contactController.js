@@ -25,15 +25,15 @@ const UpdateContacts = asyncHandler(async (req, res) => {
         const contactId = req.params.id;
         const updatedContact = await contact.findByIdAndUpdate(contactId, req.body, { new: true });
         if (!updatedContact) {
-             res.status(404);
-             throw new Error("all fields are mandotory");
+             return res.status(404).json({ error: "Contact not found" });
         }
         res.status(200).json(updatedContact);
     } catch (error) {
         console.error('Error updating contact:', error);
-        res.status(500).json({ error: 'Unable to update contact', message: error.message });
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
 
 const DeleteContact = asyncHandler(async (req, res) => {
     try {
