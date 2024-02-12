@@ -76,6 +76,7 @@ const DeleteContact = asyncHandler(async (req, res) => {
         res.status(500).json({ error: 'Unable to delete contact', message: error.message });
     }
 });
+
 // **CreateContact**:
 // - **Method:** POST
 // - **Description:** Creates a new contact in the database.

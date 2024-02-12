@@ -9,10 +9,10 @@ const currentUser = asyncHandler(async (req, res) => {
     res.status(200).json({ message: 'current user info' });
 
 });
-const login = asyncHandler(async(req, res) => {
+const login = asyncHandler(async (req, res) => {
     res.status(200).json({ message: 'successfully login' });
 });
 
-module.exports={
+module.exports = {
     register, currentUser, login
 }
