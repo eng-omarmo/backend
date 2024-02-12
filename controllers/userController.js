@@ -1,7 +1,18 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/usersModel');
-const  bycript = require('bcrypt');
-// Register a new user
+const bcrypt = require('bcrypt');
+
+// **Register**:
+// - **Method:** POST
+// - **Description:** Registers a new user.
+// - **Request Body:** Requires `username`, `email`, and `password` fields.
+// - **Response:** 
+//   - If the user is successfully registered, it returns a JSON object representing the new user with a status code of 201.
+//   - If any of the mandatory fields (username, email, password) are missing, it returns a JSON object with an error message and a status code of 400.
+//   - If the email is already taken, it returns a JSON object with an error message and a status code of 400.
+//   - If a user with the provided user ID exists, it returns a JSON object with an error message and a status code of 400.
+//   - If there's an internal server error during the registration process, it returns a JSON object with an error message and a status code of 500.
+
 const register = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
     const UserId = req.params.id;
@@ -23,12 +34,14 @@ const register = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: 'User already exists' });
     }
 
-    hashPassword = await bycript.hash(password, 10);
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const newUser = await User.create({ username, email, hashPassword });
+    const newUser = await User.create({ username, email, password: hashedPassword });
     res.status(201).json({ message: 'User created successfully', newUser });
 });
+
 
 // Get current user information
 const currentUser = asyncHandler(async (req, res) => {
