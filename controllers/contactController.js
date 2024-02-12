@@ -25,7 +25,8 @@ const UpdateContacts = asyncHandler(async (req, res) => {
         const contactId = req.params.id;
         const updatedContact = await contact.findByIdAndUpdate(contactId, req.body, { new: true });
         if (!updatedContact) {
-            return res.status(404).json({ error: 'Contact not found' });
+             res.status(404);
+             throw new Error("all fields are mandotory");
         }
         res.status(200).json(updatedContact);
     } catch (error) {

@@ -1,9 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
 const connectdb = require('./config/dbConnection')
-const errorHandler=require('./middleware/errorHandler')
+const errorHandler = require('./middleware/errorHandler')
 
-const route = require('./Routers/contactRouters'); // Assuming your router file is named 'contactRouters.js'
+const contactRoute = require('./Routers/contactRouters'); // Assuming your router file is named 'contactRouters.js'
+const usersRoute = require('./Routers/UserRouter'); // Assuming your router file is named 'contactRouters.js'
 
 connectdb(process.env.URL);
 
@@ -17,7 +18,10 @@ app.use(errorHandler);//customized error handler
 
 
 
-app.use("/api/contacts", route); // Use the imported router directly
+app.use("/api/contacts", contactRoute);
+app.use("/api", usersRoute);
+
+
 
 app.listen(port, () => {
     console.log(`app is running on ${port}`);
