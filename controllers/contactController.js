@@ -83,31 +83,43 @@ const DeleteContact = asyncHandler(async (req, res) => {
 // - **Request Body:** Requires `Id`, `name`, `email`, and `phone` fields.
 // - **Response:** If the contact is successfully created, it returns a JSON object representing the new contact with a status code of 201. If any of the mandatory fields (email, name, phone, Id) are missing, it returns a JSON object with an error message and a status code of 400. If the email format is invalid, it returns a JSON object with an error message and a status code of 400. If a contact with the same email already exists, it returns a JSON object with an error message and a status code of 400. If there's an internal server error during the creation process, it returns a JSON object with an error message and a status code of 500.
 
-
-const CreateContact = asyncHandler(async (req, res) => {
-    const { Id, name, email, phone } = req.body;
-
-    if (!email || !name || !phone || !Id) {
-        return res.status(400).json({ error: 'Email, name, and phone are mandatory fields' });
-    }
-
-    if (!isValidEmail(email)) {
-        return res.status(400).json({ error: 'Invalid email format' });
-    }
-
+const CreateContact = async (req, res) => {
     try {
-        const foundEmail = await contact.findOne({ email });
-        if (foundEmail) {
-            return res.status(400).json({ error: 'Contact with the same email already exists' });
+        if (!req.user.userId) {
+            res.status(400).json({ error: 'User ID is required' });
+            return;
         }
 
-        const newContact = await contact.create({ Id, name, email, phone });
-        return res.status(201).json(newContact);
+        console.log(req.body);
+
+        const { name, email, phone } = req.body;
+
+
+        if (!name || !email || !phone) {
+            return res.status(400).json({ error: 'All fields are mandatory' });
+        }
+        if (!isValidEmail(email)) {
+            return res.status(400).json({ error: 'Invalid email format' });
+        }
+        const existingContact = await contact.findOne({ email });
+        if (existingContact) {
+            return res.status(400).json({ error: 'Contact already exists' });
+        }
+
+        const newContact = await contact.create({
+            name,
+            email,
+            phone,
+            user: req.user._id,
+        });
+
+        res.status(201).json(newContact);
     } catch (error) {
         console.error('Error creating contact:', error);
-        return res.status(500).json({ error: 'Unable to create contact', message: error.message });
+        res.status(500).json({ error: 'Unable to create contact', message: error.message });
     }
-});
+};
+
 
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

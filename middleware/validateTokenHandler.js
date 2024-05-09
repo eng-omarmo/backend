@@ -1,26 +1,27 @@
-const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
+const User= require('../models/usersModel');
 
-const validateToken = asyncHandler(async (req, res, next) => {
-    let token;
-
-    let authHeader = req.headers.authorization;
-
-    if (authHeader && authHeader.startsWith('Bearer')) {
-        token = authHeader.split(' ')[1];
-
-        jwt.verify(token, process.env.Secrettoken, (err, decoded) => {
-            if (err) {
-                res.status(401).json({ message: "User is not authorized" });
-            } else {
-                // Token is valid, set the decoded payload in the request object
-                req.decoded = decoded;
-                next(); // Move to the next middleware
-            }
-        });
-    } else {
-        res.status(401).json({ message: "No token provided" });
+const auth = (req, res, next) => {
+    const headers = req.headers.authorization;
+    if(!headers) {
+        return res.status(401).json({ error: 'No token provided' });
     }
-});
+    const token= headers.split(' ')[1];
+    if(!token) {
+        return res.status(401).json({ error: 'No token provided' });
+    }
+    jwt.verify(token, process.env.Secrettoken, (err, decoded) => {
+        if(err) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+        const user = User.findOne({ _id: decoded.userId });
+        if(!user) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+        req.user = decoded;
+        console.log(req.user)
+        next();
+    });
+}
 
-module.exports = validateToken;
+module.exports = auth

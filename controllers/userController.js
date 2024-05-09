@@ -58,9 +58,11 @@ const login = asyncHandler(async (req, res) => {
         // If passwords don't match, return error
         return res.status(401).json({ error: 'Invalid credentials' });
     }
+    console.log(user)
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user._id, email: user.email, username: user.username }, process.env.Secrettoken, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, process.env.Secrettoken, { expiresIn: '5h' });
+    console.log(jwt.decode(token))
 
     // Send token in response
     res.status(200).json({ message: 'Successfully logged in', token });
